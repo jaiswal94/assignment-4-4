@@ -1,0 +1,28 @@
+    Importance and usage:
+
+
+a. DFSInputStream -- 
+> The client contacts datanodes directly to retrieve data and is guided by the namenode to the best datanode for each block.
+> This design allows HDFS to scale to a large number of concurrent clients.
+> The DFSInput Stream verifies checksums for the data transferred to it from the datanode.
+> The data traffic is spread across all the datanodes in the cluster.
+> the namenode merely has to service block location requests (which it stores in memory, making them very efficient).
+> serve data, which would quickly become a bottleneck as the number of clients grew.
+
+b. DFSOutputStream --
+> The DFSOutputStream maintains an internal queue of packets that are waiting to be acknowledged by datanodes.
+> The DataStreamer streams the packets to the first datanode in the pipeline,which stores each packet and forwards it to the
+  second datanode in the pipeline.
+> FSDataOutputStream wraps a DFSOutputStream, which handles communication with the datanodes and namenode.
+
+c. FSDataInputStream --
+> Provides stream (channel) for reading data.
+> it internally call FSDataInputStream.
+> FSDataInputStream uses DFSInputStream to manage the datanode and the namenode I/O. 
+
+
+d. FSDataOutputStream --
+> Provides stream (channel) for writing data.
+> it internally call FSDataOutputStream.
+> FSDataOutputStream uses DFSOutputStream, which handles communication with the datanodes and namenode.
+> Client signals write() method on FSDataOutputStream.
